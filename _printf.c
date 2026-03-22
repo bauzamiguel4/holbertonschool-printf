@@ -12,15 +12,29 @@ int _putchar(char c)
 }
 
 /**
- * print_char - helper to print a char from va_list
- * @args: list of arguments
+ * print_number - helper to print an integer
+ * @n: integer to print
  *
- * Return: 1
+ * Return: number of characters printed
  */
-static int print_char(va_list args)
+int print_number(int n)
 {
-	_putchar(va_arg(args, int));
-	return (1);
+	unsigned int n1;
+	int count = 0;
+
+	if (n < 0)
+	{
+		n1 = -n;
+		count += _putchar('-');
+	}
+	else
+		n1 = n;
+
+	if (n1 / 10)
+		count += print_number(n1 / 10);
+
+	count += _putchar((n1 % 10) + '0');
+	return (count);
 }
 
 /**
@@ -37,7 +51,6 @@ int _printf(const char *format, ...)
 
 	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
 		return (-1);
-
 	va_start(args, format);
 	while (format && format[i])
 	{
@@ -45,20 +58,19 @@ int _printf(const char *format, ...)
 		{
 			i++;
 			if (format[i] == 'c')
-				count += print_char(args);
+				count += _putchar(va_arg(args, int));
 			else if (format[i] == 's')
 			{
 				str = va_arg(args, char *);
 				if (str == NULL)
 					str = "(null)";
-				while (*str)
-				{
-					_putchar(*str++);
-					count++;
-				}
+				while (str && *str)
+					count += _putchar(*str++);
 			}
-			else if (format[i] == '%')
+			else if (format[i] == '%' )
 				count += _putchar('%');
+			else if (format[i] == 'd' || format[i] == 'i')
+				count += print_number(va_arg(args, int));
 			else
 			{
 				count += _putchar('%');
